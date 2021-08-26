@@ -33,8 +33,8 @@ const trashObject = {
   description: "test description",
   blobs: blobs,
   latlng: {
-      latitude: 54.540406,
-      longitude: 18.541683,
+      latitude: 54.541306,
+      longitude: 18.541483,
     },
 }
 //                  TEST DATA END
@@ -69,9 +69,11 @@ async function upload_blobs (blobs) {
 async function add_pin(trashObject) {
   var img_urls = await upload_blobs(trashObject.blobs)
 
-  db.collection("trash_spots").add({
+  db.collection("trash_pots").add({
     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    latlang: new firebase.firestore.GeoPoint(trashObject.latlng.latitude, trashObject.latlng.longitude),
+    // latlang: new firebase.firestore.GeoPoint(trashObject.latlng.latitude, trashObject.latlng.longitude),
+    lat: trashObject.latlng.latitude,
+    lang: trashObject.latlng.longitude,
     image_urls: img_urls,
     description: trashObject.description,
     title: trashObject.title,
