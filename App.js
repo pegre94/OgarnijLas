@@ -17,12 +17,7 @@ import { FAB } from "react-native-paper";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-} from "@gorhom/bottom-sheet";
-
+import { BottomSheet } from "react-native-btr";
 export default function App() {
   const [region, setRegion] = useState({
     latitude: 52.1127,
@@ -34,35 +29,16 @@ export default function App() {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [modal, setModal] = useState(false);
-  // BOTTOM SHEET
-  // ref
-  const bottomSheetModalRef = useRef(BottomSheetModal);
+  const [visible, setVisible] = useState(false);
 
-  // variables
-  const snapPoints = useMemo(() => ["25%", "50%"], []);
-
-  // callbacks
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
-
-  const handleSheetChanges = useCallback(
-    (index) => {
-      if (index == 1) {
-        setModal(true);
-      } else if (index == -1) {
-        setModal(false);
-      }
-    },
-    [modal]
-  );
-  // BOTTOM SHEET END
-
+  function toggle() {
+    setVisible((visible) => !visible);
+  }
   const trashList = [
     {
       latlng: {
-        latitude: 51.9194,
-        longitude: 19.1451,
+        latitude: 54.540406,
+        longitude: 18.541683,
       },
       title: "test",
       description: "test description",
@@ -75,26 +51,12 @@ export default function App() {
       title: "test",
       description: "test description",
     },
-    {
-      latlng: {
-        latitude: 51.7194,
-        longitude: 19.0451,
-      },
-      title: "test",
-      description: "test description",
-    },
   ];
 
   const TrashMarkers = () => {
     return trashList.map((marker, index) => {
       return (
-        <Marker
-          key={index}
-          coordinate={marker.latlng}
-          title={marker.title}
-          description={marker.description}
-          onPress={(e) => console.log(e.nativeEvent)}
-        >
+        <Marker key={index} coordinate={marker.latlng} onPress={toggle}>
           <MaterialCommunityIcons
             name="trash-can-outline"
             size={32}
@@ -137,25 +99,6 @@ export default function App() {
       >
         <TrashMarkers />
       </MapView>
-      <BottomSheetModalProvider>
-        <View style={styles.drawerContainer}>
-          <Button
-            onPress={handlePresentModalPress}
-            title="Present Modal"
-            color="black"
-          />
-          <BottomSheetModal
-            ref={bottomSheetModalRef}
-            index={1}
-            snapPoints={snapPoints}
-            onChange={handleSheetChanges}
-          >
-            <View style={styles.drawerContentContainer}>
-              <Text>Awesome</Text>
-            </View>
-          </BottomSheetModal>
-        </View>
-      </BottomSheetModalProvider>
       <View style={styles.fabs}>
         <FAB
           icon="crosshairs-gps"
@@ -165,12 +108,17 @@ export default function App() {
           }}
           onPress={() => getLocation(0.002)}
         />
-        <FAB
-          icon="plus"
-          style={{ flex: 1 }}
-          onPress={() => console.log("Pressed")}
-        />
+        <FAB icon="plus" style={{ flex: 1 }} onPress={() => toggle()} />
       </View>
+      <BottomSheet
+        visible={visible}
+        onBackButtonPress={toggle}
+        onBackdropPress={toggle}
+      >
+        <View style={styles.card}>
+          <Text>Place your custom view inside BottomSheet</Text>
+        </View>
+      </BottomSheet>
     </View>
   );
 }
@@ -185,18 +133,12 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  drawerContainer: {
-    position: "absolute",
-    flex: 1,
-    padding: 24,
+  card: {
+    backgroundColor: "#fff",
+    height: 400,
     justifyContent: "center",
-    backgroundColor: "grey",
-  },
-  drawerContentContainer: {
-    flex: 1,
     alignItems: "center",
   },
-
   fabs: {
     flex: 1,
     position: "absolute",
