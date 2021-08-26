@@ -89,15 +89,21 @@ async function add_pin(trashObject) {
 
 // get active trash spots  // posprzatne == false
 function get_trash_spots() {
+
   db.collection("trash_spots")
     .where('cleaned', '==', false)
     .get()
     .then(querySnapshot => {
       const documents = querySnapshot.docs.map(doc => doc.data())
+      
       // do something with trash spots
+      // console.log(documents)
       console.log(documents)
-
+      return documents
    });
+
 }
 
-add_pin(trashObject)
+// var spots = get_trash_spots()
+// console.log(spots)
+// add_pin(trashObject)
