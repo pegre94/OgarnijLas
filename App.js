@@ -18,6 +18,8 @@ import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BottomSheet } from "react-native-btr";
+import AddMarker from "./components/addMarker";
+
 export default function App() {
   const [region, setRegion] = useState({
     latitude: 52.1127,
@@ -30,8 +32,11 @@ export default function App() {
   const [errorMsg, setErrorMsg] = useState(null);
   const [modal, setModal] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [currentProps, setCurrentProps] = useState(false);
 
-  function toggle() {
+  function toggle(data) {
+    setCurrentProps(data);
+    console.log(data);
     setVisible((visible) => !visible);
   }
   const trashList = [
@@ -56,7 +61,11 @@ export default function App() {
   const TrashMarkers = () => {
     return trashList.map((marker, index) => {
       return (
-        <Marker key={index} coordinate={marker.latlng} onPress={toggle}>
+        <Marker
+          key={index}
+          coordinate={marker.latlng}
+          onPress={() => toggle({ marker })}
+        >
           <MaterialCommunityIcons
             name="trash-can-outline"
             size={32}
@@ -74,7 +83,6 @@ export default function App() {
     }
 
     let location = await Location.getCurrentPositionAsync({});
-    console.log(location.coords);
     setLocation(location);
     if (errorMsg) {
       console.log(errorMsg);
@@ -108,7 +116,7 @@ export default function App() {
           }}
           onPress={() => getLocation(0.002)}
         />
-        <FAB icon="plus" style={{ flex: 1 }} onPress={() => toggle()} />
+        <FAB icon="plus" style={{ flex: 1 }} onPress={() => toggle("plus")} />
       </View>
       <BottomSheet
         visible={visible}
@@ -116,7 +124,7 @@ export default function App() {
         onBackdropPress={toggle}
       >
         <View style={styles.card}>
-          <Text>Place your custom view inside BottomSheet</Text>
+          <AddMarker data={currentProps} />
         </View>
       </BottomSheet>
     </View>
