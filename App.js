@@ -15,18 +15,28 @@ export default function App() {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
+  const getLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permission to access location was denied");
+      return;
+    }
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    })();
-  }, []);
+    let location = await Location.getCurrentPositionAsync({});
+    console.log(location.coords);
+    setLocation(location);
+    if (errorMsg) {
+      console.log(errorMsg);
+    } else if (location) {
+      let coords = location.coords;
+      setRegion({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.001,
+        longitudeDelta: 0.001,
+      });
+    }
+  };
 
   let text = "Waiting..";
   if (errorMsg) {
@@ -44,12 +54,12 @@ export default function App() {
       />
       <View style={styles.fabs}>
         <FAB
-          icon="plus"
+          icon="crosshairs-gps"
           style={{
             flex: 1,
             marginBottom: 14,
           }}
-          onPress={() => console.log("Pressed")}
+          onPress={() => getLocation()}
         />
         <FAB
           icon="plus"
