@@ -69,7 +69,7 @@ async function upload_blobs (blobs) {
 async function add_pin(trashObject) {
   var img_urls = await upload_blobs(trashObject.blobs)
 
-  db.collection("trash_pots").add({
+  db.collection("trash_spots").add({
     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     // latlang: new firebase.firestore.GeoPoint(trashObject.latlng.latitude, trashObject.latlng.longitude),
     lat: trashObject.latlng.latitude,
