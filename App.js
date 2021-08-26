@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Platform, Text, View, StyleSheet, Dimensions } from "react-native";
+import { FAB } from "react-native-paper";
+
 import * as Location from "expo-location";
 import MapView from "react-native-maps";
 
 export default function App() {
+  const [region, setRegion] = useState({
+    latitude: 52.1127,
+    longitude: 19.2119,
+    latitudeDelta: 10,
+    longitudeDelta: 10,
+  });
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
@@ -29,17 +37,26 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text>{text}</Text>
       <MapView
-        s
-        initialRegion={{
-          latitude: 52.1127,
-          longitude: 19.2119,
-          latitudeDelta: 10,
-          longitudeDelta: 10,
-        }}
+        region={region}
+        onRegionChangeComplete={(region) => setRegion(region)}
         style={styles.map}
       />
+      <View style={styles.fabs}>
+        <FAB
+          icon="plus"
+          style={{
+            flex: 1,
+            marginBottom: 14,
+          }}
+          onPress={() => console.log("Pressed")}
+        />
+        <FAB
+          icon="plus"
+          style={{ flex: 1 }}
+          onPress={() => console.log("Pressed")}
+        />
+      </View>
     </View>
   );
 }
@@ -47,12 +64,20 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
   },
   map: {
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
+    width: "100%",
+    height: "100%",
+  },
+  fabs: {
+    flex: 1,
+    position: "absolute",
+    margin: 24,
+    right: 0,
+    bottom: 0,
+    justifyContent: "space-evenly",
+    alignItems: "center",
   },
 });
