@@ -72,8 +72,10 @@ async function add_pin(trashObject) {
   db.collection("trash_spots").add({
     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     // latlang: new firebase.firestore.GeoPoint(trashObject.latlng.latitude, trashObject.latlng.longitude),
-    lat: trashObject.latlng.latitude,
-    lang: trashObject.latlng.longitude,
+    latlang: {
+      lat: trashObject.latlng.latitude,
+      lang: trashObject.latlng.longitude,
+    },
     image_urls: img_urls,
     description: trashObject.description,
     title: trashObject.title,
@@ -108,4 +110,4 @@ function get_trash_spots() {
 
 // var spots = get_trash_spots()
 // console.log(spots)
-// add_pin(trashObject)
+add_pin(trashObject)
