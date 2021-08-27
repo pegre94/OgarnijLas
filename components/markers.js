@@ -1,4 +1,4 @@
-export const TrashMarkers = (trashList) => {
+const TrashMarkers = (trashList) => {
   return trashList.map((marker, index) => {
     return (
       <Marker

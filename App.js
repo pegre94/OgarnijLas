@@ -13,7 +13,7 @@ import {
   Dimensions,
   Button,
 } from "react-native";
-import { FAB } from "react-native-paper";
+import { FAB, Avatar } from "react-native-paper";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -33,20 +33,35 @@ export default function App() {
   const [modal, setModal] = useState(false);
   const [visible, setVisible] = useState(false);
   const [currentProps, setCurrentProps] = useState(false);
+  const [newMarker, setNewMarker] = useState(false);
+  const [newMarkerCoord, setNewMarkerCoord] = useState(null);
 
   function toggle(data) {
     setCurrentProps(data);
     console.log(data);
     setVisible((visible) => !visible);
   }
+  function toggleNewMarker() {
+    setNewMarkerCoord({
+      latitude: region.latitude,
+      longitude: region.longitude,
+    });
+    setNewMarker((newMarker) => !newMarker);
+    // toggle("plus");
+  }
+
   const trashList = [
     {
       latlng: {
         latitude: 54.540406,
         longitude: 18.541683,
       },
-      title: "test",
-      description: "test description",
+      title: "Potłuczone szkło.",
+      description:
+        "Duża ilość rozbitego szkła, do posprzątania potrzebne będą grabie.",
+      image_urls: [
+        "https://i2-prod.walesonline.co.uk/news/article12621474.ece/ALTERNATES/s615/PDR_MAI_170217Lampeter_02JPG.jpg",
+      ],
     },
     {
       latlng: {
@@ -66,14 +81,25 @@ export default function App() {
           coordinate={marker.latlng}
           onPress={() => toggle({ marker })}
         >
-          <MaterialCommunityIcons
-            name="trash-can-outline"
-            size={32}
-            color="black"
-          />
+          <Avatar.Icon size={32} icon="trash-can-outline" />
         </Marker>
       );
     });
+  };
+  const DraggableMarker = () => {
+    if (newMarker) {
+      return (
+        <Marker
+          draggable
+          coordinate={newMarkerCoord}
+          onDragEnd={(e) => setNewMarkerCoord(e.nativeEvent.coordinate)}
+        >
+          <Avatar.Icon size={50} icon="trash-can-outline" />
+        </Marker>
+      );
+    } else {
+      return <View></View>;
+    }
   };
   const getLocation = async (d1) => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -106,6 +132,7 @@ export default function App() {
         onMapReady={() => getLocation(0.005)}
       >
         <TrashMarkers />
+        <DraggableMarker />
       </MapView>
       <View style={styles.fabs}>
         <FAB
@@ -116,7 +143,11 @@ export default function App() {
           }}
           onPress={() => getLocation(0.002)}
         />
-        <FAB icon="plus" style={{ flex: 1 }} onPress={() => toggle("plus")} />
+        <FAB
+          icon="plus"
+          style={{ flex: 1 }}
+          onPress={() => toggleNewMarker()}
+        />
       </View>
       <BottomSheet
         visible={visible}
@@ -144,8 +175,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
     height: 400,
-    justifyContent: "center",
-    alignItems: "center",
+    padding: 10,
   },
   fabs: {
     flex: 1,
